@@ -1,0 +1,33 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>Сповіщення</h1>
+<div class="notif-tabs">
+    <a href="?tab=company" class="{% if active_tab == 'company' %}active{% endif %}">Компанія</a>
+    <a href="?tab=admin" class="{% if active_tab == 'admin' %}active{% endif %}">Від адміністрації</a>
+</div>
+
+<div class="notif-list">
+    {% for n in notifications %}
+        <div class="notif-item {% if not n.is_read %}unread{% endif %}">
+            <h4>{{ n.title }}</h4>
+            {% if n.body %}<p>{{ n.body }}</p>{% endif %}
+            <p class="notif-time">{{ n.created_at|date:"d.m.Y H:i" }}
+                {% if n.url %} · <a href="{{ n.url }}">Перейти</a>{% endif %}
+            </p>
+        </div>
+    {% empty %}
+        <p>Немає сповіщень.</p>
+    {% endfor %}
+
+    {% if announcements %}
+        {% for a in announcements %}
+            <div class="notif-item">
+                <h4>{{ a.title }}</h4>
+                <p>{{ a.body|linebreaks }}</p>
+                <p class="notif-time">{{ a.created_at|date:"d.m.Y H:i" }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

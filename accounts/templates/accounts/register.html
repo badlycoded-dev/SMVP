@@ -1,0 +1,28 @@
+{% extends 'app/base.html' %}
+{% block title %}Реєстрація{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1>Реєстрація</h1>
+    <form method="POST" class="auth-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="form-errors">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <label for="{{ form.username.id_for_label }}">Логін</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+
+        <label for="{{ form.password1.id_for_label }}">Пароль</label>
+        {{ form.password1 }}
+        {{ form.password1.errors }}
+        <small>{{ form.password1.help_text }}</small>
+
+        <label for="{{ form.password2.id_for_label }}">Підтвердження пароля</label>
+        {{ form.password2 }}
+        {{ form.password2.errors }}
+
+        <button type="submit" class="btn-auth">Зареєструватися</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h1>{{ title }}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Назва товару
+            <input type="text" name="name" class="form-input" required>
+        </label>
+        <label>Категорія
+            <select name="category" class="form-input" required>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Опис
+            <textarea name="description" class="form-input" rows="5" required></textarea>
+        </label>
+        <label>Ціна (грн)
+            <input type="number" name="price" step="0.01" min="0" class="form-input" required>
+        </label>
+        <label>Зображення
+            <input type="file" name="image" class="form-input">
+        </label>
+        <button type="submit" class="btn-auth">Додати товар</button>
+    </form>
+</div>
+{% endblock %}

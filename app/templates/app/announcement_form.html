@@ -1,0 +1,13 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h1>{{ title }}</h1>
+    <p>Це повідомлення отримають усі користувачі у вкладці "Від адміністрації".</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-auth">Надіслати всім</button>
+    </form>
+</div>
+{% endblock %}

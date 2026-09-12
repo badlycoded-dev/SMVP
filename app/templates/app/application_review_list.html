@@ -1,0 +1,17 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<ul class="application-list">
+    {% for application in applications %}
+        <li>
+            <a href="{% url 'app:application_review_detail' application.id %}">
+                {{ application.company_name }} — {{ application.user.username }}
+            </a>
+            <small>{{ application.created_at|date:"d.m.Y H:i" }}</small>
+        </li>
+    {% empty %}
+        <li>Немає заявок на розгляді.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

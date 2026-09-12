@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>{% block title %}Магазин{% endblock %}</title>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{% url 'app:product_list' %}" class="logo">Магазин</a>
+        <div class="nav-links">
+            <a href="{% url 'app:cart_detail' %}">Кошик ({{ cart.get_cart_len }})</a>
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}
+                    <a href="{% url 'admin:index' %}">Адмін-панель</a>
+                    <a href="{% url 'app:application_review_list' %}">Заявки продавців</a>
+                    <a href="{% url 'app:announcement_create' %}">Оголошення</a>
+                {% endif %}
+                {% if user.company %}
+                    <a href="{% url 'app:product_create' %}">Додати товар</a>
+                    {% if not user.company.is_single %}
+                        <a href="{% url 'app:company_members' user.company.slug %}">Команда</a>
+                    {% endif %}
+                {% endif %}
+                <a href="{% url 'app:notification_list' %}" class="notif-bell" title="Сповіщення">
+                    &#128276;
+                    {% if unread_notifications_count > 0 %}
+                        <span class="notif-badge">{{ unread_notifications_count }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'accounts:profile' %}" class="nav-profile">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" class="nav-avatar">
+                    {% else %}
+                        {{ user.username }}
+                    {% endif %}
+                    {% if user.company %}<span class="verified-badge" title="Верифікований продавець">&#10003;</span>{% endif %}
+                </a>
+                <a href="{% url 'accounts:logout' %}">Вийти</a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}">Вхід</a>
+                <a href="{% url 'accounts:register' %}" class="btn-auth-small">Реєстрація</a>
+            {% endif %}
+        </div>
+    </nav>
+    <main>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

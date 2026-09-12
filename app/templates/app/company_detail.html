@@ -1,0 +1,50 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ company.name }}{% endblock %}
+{% block content %}
+<div class="company-header">
+    {% if company.logo %}
+        <img src="{{ company.logo.url }}" alt="{{ company.name }}" style="max-width:120px;border-radius:8px;">
+    {% endif %}
+    <h1>{{ company.name }} {% if company.is_single %}<span class="verified-badge" title="Індивідуальний продавець">✓</span>{% endif %}</h1>
+    <p>{{ company.description|linebreaks }}</p>
+</div>
+
+<div class="company-products">
+    <h2>Товари</h2>
+    <div class="product-list">
+        {% for product in products %}
+        <div class="product-card">
+            <a href="{{ product.get_absolute_url }}">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 200px; height: auto;">
+                {% else %}
+                <div class="no-image">Зображення відсутнє</div>
+                {% endif %}
+                <h3>{{ product.name }}</h3>
+            </a>
+            <strong>{{ product.price }} грн</strong>
+        </div>
+        {% empty %}
+        <p>У цієї компанії поки немає товарів.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="company-propositions">
+    <h2>Пропозиції</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'app:proposition_create' company.slug %}" class="btn-auth-small">+ Нова пропозиція</a>
+    {% endif %}
+    <ul class="proposition-list">
+        {% for proposition in propositions %}
+            <li>
+                <a href="{% url 'app:proposition_detail' company.slug proposition.pk %}">{{ proposition.title }}</a>
+                <span class="proposition-status status-{{ proposition.status }}">{{ proposition.get_status_display }}</span>
+                — <small>{{ proposition.author.username }}</small>
+            </li>
+        {% empty %}
+            <li>Пропозицій поки немає.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

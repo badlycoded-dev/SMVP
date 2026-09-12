@@ -1,0 +1,63 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>Кошик</h1>
+
+{% if cart|length > 0 %}
+<table class="cart-table">
+    <thead>
+        <tr>
+            <th>Зображення</th>
+            <th>Назва</th>
+            <th>Кількість</th>
+            <th>Ціна за од.</th>
+            <th>Сума</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart %}
+        <tr>
+            <td>
+                {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:60px;height:auto;border-radius:6px;">
+                {% else %}
+                    <div class="no-image" style="width:60px;height:60px;">—</div>
+                {% endif %}
+            </td>
+            <td><a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a></td>
+            <td>
+                <form action="{% url 'app:cart_add' item.product.id %}" method="post" class="cart-qty-form">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-input" style="width:70px;">
+                    <input type="hidden" name="override" value="true">
+                    <button type="submit" class="btn-auth-small">Оновити</button>
+                </form>
+            </td>
+            <td>{{ item.price }} грн</td>
+            <td>{{ item.total_price }} грн</td>
+            <td>
+                <form action="{% url 'app:cart_remove' item.product.id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="cart-remove" title="Видалити">×</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="cart-total">
+    <strong>Загальна сума: {{ cart.get_total_price }} грн</strong>
+</div>
+
+<div class="cart-actions">
+    <a href="{% url 'app:product_list' %}" class="btn-auth">Продовжити покупки</a>
+    <a href="#" class="btn-auth">Оформити замовлення</a>
+</div>
+
+{% else %}
+<p>Кошик порожній.</p>
+<a href="{% url 'app:product_list' %}" class="btn-auth">До каталогу товарів</a>
+{% endif %}
+{% endblock %}

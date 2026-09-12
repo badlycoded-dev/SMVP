@@ -1,0 +1,32 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1>Редагування профілю</h1>
+    <form method="post" enctype="multipart/form-data" class="auth-form">
+        {% csrf_token %}
+
+        {% if user_form.non_field_errors or profile_form.non_field_errors %}
+            <div class="form-errors">
+                {{ user_form.non_field_errors }}
+                {{ profile_form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {% for field in user_form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="form-errors">{{ field.errors }}</div>{% endif %}
+        {% endfor %}
+
+        {% for field in profile_form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="form-errors">{{ field.errors }}</div>{% endif %}
+        {% endfor %}
+
+        <button type="submit" class="btn-auth">Зберегти зміни</button>
+        <a href="{% url 'accounts:profile' %}" class="btn-auth-small">Скасувати</a>
+    </form>
+</div>
+{% endblock %}

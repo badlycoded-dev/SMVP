@@ -1,0 +1,23 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h1>{{ title }}</h1>
+    <p><strong>Користувач:</strong> {{ application.user.username }} ({{ application.user.email }})</p>
+    <p><strong>Назва компанії:</strong> {{ application.company_name }}</p>
+    <p><strong>Повідомлення:</strong></p>
+    <p>{{ application.message|linebreaks }}</p>
+    <p><strong>Статус:</strong> {{ application.get_status_display }}</p>
+
+    {% if application.status == 'pending' %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-auth">Зберегти рішення</button>
+        </form>
+    {% else %}
+        <p><strong>Коментар рецензента:</strong> {{ application.review_note|default:"—" }}</p>
+        <p><small>Розглянуто: {{ application.reviewed_by.username }} · {{ application.reviewed_at|date:"d.m.Y H:i" }}</small></p>
+    {% endif %}
+</div>
+{% endblock %}

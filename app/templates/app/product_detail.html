@@ -1,0 +1,82 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ product.name }} — Інтернет-магазин{% endblock %}
+{% block content %}
+<div class="product-detail-container">
+  <div class="product-detail-header">
+    <a href="{{ product.category.get_absolute_url }}" class="category-badge">
+      {{ product.category.name }}
+    </a>
+    <h1>{{ product.name }}</h1>
+    <div class="product-meta">
+      <span>Додано: {{ product.created_at|date:"d.m.Y" }}</span>
+      <span>👁️ {{ product.views }} переглядів</span>
+      {% if product.company %}
+        <span>Продавець: <a href="{{ product.company.get_absolute_url }}">{{ product.company.name }}</a></span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="product-detail-main">
+    <div class="product-image-large">
+      {% if product.image %}
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+      {% else %}
+      <div class="no-image-large">Зображення відсутнє</div>
+      {% endif %}
+    </div>
+
+    <div class="product-info-block">
+      <div class="product-price">{{ product.price }} грн</div>
+      <div class="product-description">
+        <h3>Опис товару:</h3>
+        <p>{{ product.description|linebreaks }}</p>
+      </div>
+      <a href="{% url 'app:product_list' %}" class="btn-back">← Назад до каталогу</a>
+    </div>
+  </div>
+
+  {% if related_products %}
+  <div class="related-products-section">
+    <h2>Схожі товари</h2>
+    <div class="products-grid">
+      {% for related in related_products %}
+      <div class="product-card">
+        <a href="{{ related.get_absolute_url }}">
+          {% if related.image %}
+          <img src="{{ related.image.url }}" alt="{{ related.name }}" />
+          {% else %}
+          <div class="no-image">Немає фото</div>
+          {% endif %}
+          <h4>{{ related.name }}</h4>
+          <span class="price">{{ related.price }} грн</span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="comments-section">
+    <h2>Коментарі ({{ comments|length }})</h2>
+    {% for comment in comments %}
+      <div class="comment">
+        <strong>{{ comment.author.username }}</strong>
+        <span class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+        <p>{{ comment.body|linebreaks }}</p>
+      </div>
+    {% empty %}
+      <p>Коментарів поки немає.</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+      <form method="post" class="comment-form">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit" class="btn-auth-small">Додати коментар</button>
+      </form>
+    {% else %}
+      <p><a href="{% url 'accounts:login' %}">Увійдіть</a>, щоб залишити коментар.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'app/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div class="categories-menu">
+        <a href="{% url 'app:product_list' %}" class="{% if not category %}active{% endif %}">Всі товари</a>
+        {% for cat in categories %}
+        <a href="{{ cat.get_absolute_url }}" class="{% if category.slug == cat.slug %}active{% endif %}">
+            {{ cat.name }} ({{ cat.products.count }})
+        </a>
+        {% endfor %}
+    </div>
+
+    <div class="sort-container">
+        <span class="sort-label">Сортувати:</span>
+        <div class="sort-buttons">
+            <a href="?sort=new" class="sort-btn {% if current_sort == 'new' or not current_sort %}active{% endif %}">Нові</a>
+            <a href="?sort=old" class="sort-btn {% if current_sort == 'old' %}active{% endif %}">Старі</a>
+            <a href="?sort=popular" class="sort-btn {% if current_sort == 'popular' %}active{% endif %}">Популярні</a>
+            <a href="?sort=price_asc" class="sort-btn {% if current_sort == 'price_asc' %}active{% endif %}">Дешевші</a>
+            <a href="?sort=price_desc" class="sort-btn {% if current_sort == 'price_desc' %}active{% endif %}">Дорожчі</a>
+            <a href="?sort=company" class="sort-btn {% if current_sort == 'company' %}active{% endif %}">За компанією</a>
+        </div>
+    </div>
+
+    <div class="product-list">
+        {% for product in products %}
+        <div class="product-card">
+            <a href="{{ product.get_absolute_url }}">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 200px; height: auto;">
+                {% else %}
+                <div class="no-image">Зображення відсутнє</div>
+                {% endif %}
+                <h2>{{ product.name }}</h2>
+            </a>
+            <p>{{ product.description }}</p>
+            {% if product.company %}
+                <div class="product-company"><a href="{{ product.company.get_absolute_url }}">{{ product.company.name }}</a></div>
+            {% endif %}
+            <strong>{{ product.price }} грн</strong>
+            <div>{{ product.views }} переглядів</div>
+            <a href="{{ product.get_absolute_url }}" class="btn-detail">Детальніше</a>
+            <form action="{% url 'app:cart_add' product.id %}" method="post" class="cart-add-form">
+                {% csrf_token %}
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn-auth-small">В кошик</button>
+            </form>
+        </div>
+        {% empty %}
+        <p>Товарів поки немає.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

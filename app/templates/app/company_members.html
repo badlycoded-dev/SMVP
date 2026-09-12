@@ -1,0 +1,28 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>Команда — {{ company.name }}</h1>
+
+<div class="form-container">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-auth">Додати учасника</button>
+    </form>
+</div>
+
+<ul class="member-list">
+    {% for member in members %}
+        <li>
+            <span>{{ member.user.username }}</span>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="remove_member_id" value="{{ member.id }}">
+                <button type="submit">Видалити</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>Учасників поки немає.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

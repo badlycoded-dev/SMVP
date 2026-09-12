@@ -1,0 +1,52 @@
+{% extends 'app/base.html' %}
+{% block title %}{{ proposition.title }}{% endblock %}
+{% block content %}
+<div class="proposition-detail">
+    <a href="{{ company.get_absolute_url }}">← {{ company.name }}</a>
+    <h1>{{ proposition.title }}</h1>
+    <span class="proposition-status status-{{ proposition.status }}">{{ proposition.get_status_display }}</span>
+    <p><small>Автор: {{ proposition.author.username }} · {{ proposition.created_at|date:"d.m.Y H:i" }}</small></p>
+    <div class="proposition-body">{{ proposition.body|linebreaks }}</div>
+
+    {% if proposition.status != 'open' %}
+        <div class="proposition-decision">
+            <strong>Рішення власника:</strong>
+            <p>{{ proposition.decision_note|linebreaks }}</p>
+            <small>{{ proposition.closed_at|date:"d.m.Y H:i" }}</small>
+        </div>
+    {% elif is_owner and decision_form %}
+        <div class="proposition-decision-form">
+            <h3>Ваше рішення</h3>
+            <form method="post" action="{% url 'app:proposition_decide' company.slug proposition.pk %}">
+                {% csrf_token %}
+                {{ decision_form.as_p }}
+                <button type="submit" class="btn-auth">Зберегти рішення</button>
+            </form>
+        </div>
+    {% endif %}
+
+    <div class="comments-section">
+        <h2>Обговорення ({{ comments|length }})</h2>
+        {% for comment in comments %}
+            <div class="comment">
+                <strong>{{ comment.author.username }}</strong>
+                {% if comment.author == company.owner %}<span class="verified-badge" title="Продавець">✓</span>{% endif %}
+                <span class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                <p>{{ comment.body|linebreaks }}</p>
+            </div>
+        {% empty %}
+            <p>Коментарів поки немає.</p>
+        {% endfor %}
+
+        {% if user.is_authenticated %}
+            <form method="post" class="comment-form">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit" class="btn-auth-small">Додати коментар</button>
+            </form>
+        {% else %}
+            <p><a href="{% url 'accounts:login' %}">Увійдіть</a>, щоб коментувати.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
